@@ -1,7 +1,7 @@
 import { AzureFunction, Context } from "@azure/functions"
 
 const cosmosDBTrigger: AzureFunction = async function (context: Context, documents: any[]): Promise<void> {
-    const version = "v2";
+    const version = "v3";
 
     if (!!documents && documents.length > 0) {
         const documentId = documents[0].id;
