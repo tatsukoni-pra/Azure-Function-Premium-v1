@@ -14,10 +14,10 @@ env:
   NODE_VERSION: '16.x' # set this to the node version to use (supports 8.x, 10.x, 12.x)
   RESOURCE_GROUP_NAME: "tatsukoni-test-v2"
   FUNCTION_NAME: "function-tatsukoni-test-premium-v1"
-  SLOT_NAME: "Staging"
+  SLOT_NAME: "Production"
 
 jobs:
-  build-and-deploy-staging:
+  build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -47,26 +47,3 @@ jobs:
           slot-name: ${{ env.SLOT_NAME }}
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2C7D6D3636FE4FA48E8ACA75BD56EBB3 }}
-
-  swap-production:
-    needs: build-and-deploy-staging
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - name: "Login via Azure CLI"
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_FUNCTION_TATSUKONI_TEST_PREMIUM_V1 }}
-
-      - name: "Swap Azure Function To Production"
-        id: slot_swap
-        run: |
-          az webapp deployment slot swap \
-            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
-            --name ${{ env.FUNCTION_NAME }} \
-            --slot ${{ env.SLOT_NAME }}
-
-      - name: "Logout via Azure CLI"
-        run: |
-          az logout
